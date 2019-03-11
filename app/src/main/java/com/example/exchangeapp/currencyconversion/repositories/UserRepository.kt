@@ -16,6 +16,7 @@ class UserRepository @Inject internal constructor(private val mRealm: Realm) {
         mRealm.executeTransaction {
             val userCount = it.where(User::class.java).count()
             if (userCount == 0L) {
+                it.deleteAll()
                 val user = it.createObject(User::class.java, 0)
                 val accountEur = it.createObject(Account::class.java, 0)
                 accountEur.name = "EUR ACCOUNT"
