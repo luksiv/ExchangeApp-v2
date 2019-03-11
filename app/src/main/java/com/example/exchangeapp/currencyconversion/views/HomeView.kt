@@ -1,12 +1,14 @@
 package com.example.exchangeapp.currencyconversion.views
 
 import android.content.Context
+import android.graphics.drawable.GradientDrawable
 import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.exchangeapp.R
 import com.example.exchangeapp.currencyconversion.adapters.AccountsAdapter
 import com.jakewharton.rxbinding.widget.RxAdapterView
@@ -116,7 +118,7 @@ class HomeView(context: Context) : FrameLayout(context, null) {
         spn_toCurrency.adapter = spinnerAdapter
 
         accountsAdapter = AccountsAdapter(accountsRealmResults)
-        rv_userAccounts.layoutManager = LinearLayoutManager(context)
+        rv_userAccounts.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         rv_userAccounts.adapter = accountsAdapter
     }
 

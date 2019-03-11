@@ -1,5 +1,6 @@
 package com.example.exchangeapp.currencyconversion.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,16 +27,25 @@ class AccountsAdapter(var accounts: RealmResults<Account>?) : RecyclerView.Adapt
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun clear() {
-            itemView.tv_account.text = ""
+            itemView.let{
+                it.tv_accountName.text = ""
+                it.tv_currency.text = ""
+                it.tv_amount.text = ""
+                it.tv_currencyFee.text = ""
+                it.tv_amountFee.text = ""
+            }
         }
 
         fun onBind(position: Int) {
-            val account = accounts?.get(position)?.getBalance().toString()
-            inflateData(account)
-        }
-
-        private fun inflateData(text: String) {
-            itemView.tv_account.text = text
+            val account = accounts?.get(position)
+            val appliedFees = account?.getAppliedFeesSum()
+            itemView.let{
+                it.tv_accountName.text = account?.name ?: "N/A"
+                it.tv_currency.text = account?.getBalance()?.currencyUnit?.symbol
+                it.tv_amount.text = account?.getBalance()?.amount.toString()
+                it.tv_currencyFee.text = account?.getBalance()?.currencyUnit?.symbol
+                it.tv_amountFee.text = appliedFees?.amount.toString()
+            }
         }
 
     }

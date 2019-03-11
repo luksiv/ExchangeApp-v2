@@ -26,6 +26,12 @@ class CurrencyConversionHelper @Inject internal constructor(
         val feeProcentage = 0.007 // 0.7%
     }
 
+    fun getExchangeValueTo(from: Money, to: CurrencyUnit): Money =
+        currencyConversionApiClient.calculate(from, to.currencyCode)
+            .subscribeOn(Schedulers.io())
+            .blockingGet()
+            .getAmountMoney()
+
     fun performExchange(from: Money, to: CurrencyUnit): Completable {
         return Completable.fromAction {
             if (balanceManager.isBalanceSufficient(from)) {
@@ -59,13 +65,8 @@ class CurrencyConversionHelper @Inject internal constructor(
                 it.feeAmount = fee.amount.toPlainString()
             }
         }
+        realm.close()
     }
-
-    fun getExchangeValueTo(from: Money, to: CurrencyUnit): Money =
-        currencyConversionApiClient.calculate(from, to.currencyCode)
-            .subscribeOn(Schedulers.io())
-            .blockingGet()
-            .getAmountMoney()
 
     private fun calculateExchangeFee(money: Money): Money = when (isExchangeFree()) {
         true -> Money.of(money.currencyUnit, BigDecimal("0"))

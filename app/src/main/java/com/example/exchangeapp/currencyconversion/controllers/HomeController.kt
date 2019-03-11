@@ -8,6 +8,7 @@ import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.HorizontalChangeHandler
 import com.example.exchangeapp.CurrencyConversionApplication
 import com.example.exchangeapp.common.AppConstants
+import com.example.exchangeapp.common.AppConstants.currencies
 import com.example.exchangeapp.common.controllers.BaseController
 import com.example.exchangeapp.currencyconversion.helpers.CurrencyConversionHelper
 import com.example.exchangeapp.currencyconversion.exceptions.BalanceInsufficientException
@@ -42,6 +43,7 @@ class HomeController : BaseController(), HomeViewDelegate {
                 UserRepository(realm).setupUser()
                 realm.close()
             }
+
             contentView = it
             it.homeViewDelegate = this
             val currencies = AppConstants.currencies.map { currencyUnit -> currencyUnit.currencyCode }.toList()
