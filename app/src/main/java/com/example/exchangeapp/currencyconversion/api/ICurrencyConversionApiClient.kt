@@ -8,7 +8,5 @@ import org.joda.money.Money
 import java.math.BigDecimal
 
 interface ICurrencyConversionApiClient {
-
     fun calculate(fromMoney: Money, toCurrency: String): Single<EVPApiResponse>
-
 }

@@ -1,21 +1,22 @@
-package com.example.exchangeapp.currencyconversion.repositories
+package com.example.exchangeapp.common.repositories
 
 import android.util.Log
-import com.paysera.currencyconverter.currencyconversion.entities.Account
-import com.paysera.currencyconverter.currencyconversion.entities.User
+import com.example.exchangeapp.currencyconversion.entities.Account
+import com.example.exchangeapp.currencyconversion.entities.User
 import io.realm.Realm
+import io.realm.RealmList
+import io.realm.RealmResults
 import org.joda.money.CurrencyUnit
 import javax.inject.Inject
 
-class UserRepository @Inject internal constructor(private val mRealm: Realm) {
+class UserRepository(realm: Realm) : EntityRepository<User>(realm) {
 
-
+    override fun getPersistentType(): Class<User> = User::class.java
 
     fun setupUser() {
         Log.v("Realm", "Realm: setupUser called")
-        mRealm.executeTransaction {
-            val userCount = it.where(User::class.java).count()
-            if (userCount == 0L) {
+        realm.executeTransaction {
+            if (it.where(User::class.java).findAll().isEmpty()) {
                 it.deleteAll()
                 val user = it.createObject(User::class.java, 0)
                 val accountEur = it.createObject(Account::class.java, 0)
@@ -38,9 +39,7 @@ class UserRepository @Inject internal constructor(private val mRealm: Realm) {
         }
     }
 
-    fun getUser(): User {
-        print("Realm: getting user")
-        return mRealm.where(User::class.java).equalTo("userId", 0).findFirst()
-    }
+    fun getUser(): User = queryBuilder().equalTo("userId", 0).findFirst()
 
+    fun getUserAccounts(): RealmList<Account> = getUser().accounts
 }

@@ -10,7 +10,7 @@ import com.bluelinelabs.conductor.RouterTransaction
 import com.example.exchangeapp.currencyconversion.controllers.HomeController
 import com.paysera.currencyconverter.currencyconversion.SchedulerProvider
 import com.paysera.currencyconverter.currencyconversion.api.CurrencyConversionApiClient
-import com.example.exchangeapp.currencyconversion.repositories.UserRepository
+import com.example.exchangeapp.common.repositories.UserRepository
 import dagger.android.AndroidInjection
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable

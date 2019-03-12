@@ -5,13 +5,15 @@ import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.FrameLayout
+import android.widget.SpinnerAdapter
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.exchangeapp.R
 import com.example.exchangeapp.currencyconversion.adapters.AccountsAdapter
 import com.jakewharton.rxbinding.widget.RxAdapterView
 import com.jakewharton.rxbinding.widget.RxTextView
-import com.paysera.currencyconverter.currencyconversion.entities.Account
+import com.example.exchangeapp.currencyconversion.entities.Account
+import io.realm.RealmList
 import io.realm.RealmResults
 import kotlinx.android.synthetic.main.view_home.view.*
 import org.joda.money.CurrencyUnit
@@ -22,7 +24,6 @@ interface HomeViewDelegate {
     fun onAmountChanged(fromMoney: Money, toCurrency: CurrencyUnit)
     fun onExchangeSubmit(fromMoney: Money, toCurrency: CurrencyUnit)
     fun onHistoryClick()
-    fun getAccountsList(): RealmResults<Account>
 }
 
 class HomeView(context: Context) : FrameLayout(context, null) {
@@ -66,8 +67,7 @@ class HomeView(context: Context) : FrameLayout(context, null) {
         // region Rx AdapterViews and TextViews
         RxAdapterView.itemSelections(toCurrency)
             .subscribe(
-                { changed ->
-                    Log.v("RxUpdate", "calling updateToValue to_curr")
+                {
                     updateToValue()
                 },
                 { err ->
@@ -76,8 +76,7 @@ class HomeView(context: Context) : FrameLayout(context, null) {
             )
         RxAdapterView.itemSelections(fromCurrency)
             .subscribe(
-                { changed ->
-                    Log.v("RxUpdate", "calling updateToValue from_curr")
+                {
                     updateToValue()
                 },
                 { err ->
@@ -87,8 +86,7 @@ class HomeView(context: Context) : FrameLayout(context, null) {
 
         RxTextView.textChanges(fromAmount)
             .subscribe(
-                { fromText ->
-                    Log.v("RxUpdate", "calling updateToValue et_fromAmount")
+                {
                     updateToValue()
                 },
                 { err ->
@@ -102,20 +100,19 @@ class HomeView(context: Context) : FrameLayout(context, null) {
     //region Public methods
     fun showConversionResult(succeeded: Boolean, reason: String = "") {
         if (succeeded) {
-            updateAccountsList()
             Toast.makeText(context, "Conversion successful", Toast.LENGTH_SHORT).show()
         } else {
             Toast.makeText(context, "Conversion unsuccessful ($reason)", Toast.LENGTH_SHORT).show()
         }
     }
 
-    fun configureViews(currencies: List<String>, accountsRealmResults: RealmResults<Account>) {
+    fun configureViews(currencies: List<String>, accounts: RealmList<Account>) {
         val spinnerAdapter =
             ArrayAdapter<String>(context, android.R.layout.simple_spinner_dropdown_item, currencies)
         fromCurrency.adapter = spinnerAdapter
         toCurrency.adapter = spinnerAdapter
 
-        accountsAdapter = AccountsAdapter(accountsRealmResults)
+        accountsAdapter = AccountsAdapter(accounts)
         accountsList.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         accountsList.adapter = accountsAdapter
     }
@@ -123,6 +120,11 @@ class HomeView(context: Context) : FrameLayout(context, null) {
     fun updateExchangeValue(toMoney: Money) {
         toAmount.setText(toMoney.amount.toPlainString())
     }
+
+    fun updateAccountsList(accounts: RealmList<Account>) {
+        accountsAdapter.updateAccounts(accounts)
+    }
+
     //endregion
 
     // region Private methods
@@ -143,12 +145,5 @@ class HomeView(context: Context) : FrameLayout(context, null) {
     }
 
     private fun getToCurrency(): CurrencyUnit = CurrencyUnit.of(toCurrency.selectedItem.toString())
-
-    private fun updateAccountsList() {
-        homeViewDelegate?.getAccountsList()?.let {
-            accountsAdapter.accounts = it
-            accountsAdapter.notifyDataSetChanged()
-        }
-    }
     // endregion
 }

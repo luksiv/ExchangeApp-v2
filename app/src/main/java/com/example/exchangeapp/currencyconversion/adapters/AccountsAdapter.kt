@@ -5,11 +5,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.exchangeapp.R
-import com.paysera.currencyconverter.currencyconversion.entities.Account
+import com.example.exchangeapp.currencyconversion.entities.Account
+import io.realm.RealmList
 import io.realm.RealmResults
 import kotlinx.android.synthetic.main.account_item.view.*
 
-class AccountsAdapter(var accounts: RealmResults<Account>) : RecyclerView.Adapter<AccountsAdapter.ViewHolder>() {
+class AccountsAdapter(var accounts: RealmList<Account>) : RecyclerView.Adapter<AccountsAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.account_item, parent, false)
@@ -21,6 +22,11 @@ class AccountsAdapter(var accounts: RealmResults<Account>) : RecyclerView.Adapte
     }
 
     override fun getItemCount(): Int = accounts.size
+
+    fun updateAccounts(accounts: RealmList<Account>){
+        this.accounts = accounts
+        this.notifyDataSetChanged()
+    }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun onBind(position: Int) {

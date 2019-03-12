@@ -1,6 +1,6 @@
 package com.example.exchangeapp.common.services
 
-import com.paysera.currencyconverter.currencyconversion.entities.Account
+import com.example.exchangeapp.currencyconversion.entities.Account
 import io.realm.Realm
 import org.joda.money.CurrencyUnit
 import org.joda.money.Money

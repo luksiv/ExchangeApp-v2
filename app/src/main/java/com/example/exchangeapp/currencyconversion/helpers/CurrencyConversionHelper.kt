@@ -1,16 +1,16 @@
 package com.example.exchangeapp.currencyconversion.helpers
 
 import android.util.Log
+import com.example.exchangeapp.common.repositories.ExchangeHistoryRepository
 import com.example.exchangeapp.common.services.BalanceManager
 import com.example.exchangeapp.currencyconversion.exceptions.BalanceInsufficientException
 import com.paysera.currencyconverter.currencyconversion.api.CurrencyConversionApiClient
-import com.paysera.currencyconverter.currencyconversion.entities.Exchange
+import com.example.exchangeapp.currencyconversion.entities.Exchange
 import io.reactivex.Completable
 import io.reactivex.schedulers.Schedulers
 import io.realm.Realm
 import org.joda.money.CurrencyUnit
 import org.joda.money.Money
-import java.math.BigDecimal
 import java.math.RoundingMode
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -22,15 +22,16 @@ class CurrencyConversionHelper @Inject internal constructor(
 ) {
 
     companion object {
-        val freeExchanges = 10
-        val feeProcentage = 0.007 // 0.7%
+        const val freeExchanges = 10
+        const val feePercentage = 0.007 // 0.7%
     }
 
-    fun getExchangeValueTo(from: Money, to: CurrencyUnit): Money =
-        currencyConversionApiClient.calculate(from, to.currencyCode)
+    fun getExchangeValueTo(from: Money, to: CurrencyUnit): Money {
+        return currencyConversionApiClient.calculate(from, to.currencyCode)
             .subscribeOn(Schedulers.io())
             .blockingGet()
             .getAmountMoney()
+    }
 
     fun performExchange(from: Money, to: CurrencyUnit): Completable {
         return Completable.fromAction {
@@ -70,11 +71,10 @@ class CurrencyConversionHelper @Inject internal constructor(
 
     private fun calculateExchangeFee(money: Money): Money = when (isExchangeFree()) {
         true -> Money.of(money.currencyUnit, 0.toBigDecimal())
-        false -> money.multipliedBy(feeProcentage, RoundingMode.HALF_DOWN)
+        false -> money.multipliedBy(feePercentage, RoundingMode.HALF_DOWN)
     }
 
-    private fun isExchangeFree(): Boolean =
-        Realm.getDefaultInstance().where(Exchange::class.java).count() < freeExchanges
-
-
+    private fun isExchangeFree(): Boolean {
+        return ExchangeHistoryRepository(Realm.getDefaultInstance()).getExchangeCount() < freeExchanges
+    }
 }

@@ -8,14 +8,13 @@ import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.HorizontalChangeHandler
 import com.example.exchangeapp.CurrencyConversionApplication
 import com.example.exchangeapp.common.AppConstants
-import com.example.exchangeapp.common.AppConstants.currencies
 import com.example.exchangeapp.common.controllers.BaseController
 import com.example.exchangeapp.currencyconversion.helpers.CurrencyConversionHelper
 import com.example.exchangeapp.currencyconversion.exceptions.BalanceInsufficientException
-import com.example.exchangeapp.currencyconversion.repositories.UserRepository
+import com.example.exchangeapp.common.repositories.UserRepository
 import com.example.exchangeapp.currencyconversion.views.HomeView
 import com.example.exchangeapp.currencyconversion.views.HomeViewDelegate
-import com.paysera.currencyconverter.currencyconversion.entities.Account
+import com.example.exchangeapp.currencyconversion.entities.Account
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
@@ -47,7 +46,7 @@ class HomeController : BaseController(), HomeViewDelegate {
             contentView = it
             it.homeViewDelegate = this
             val currencies = AppConstants.currencies.map { currencyUnit -> currencyUnit.currencyCode }.toList()
-            val accountsResults = getAccountsList()
+            val accountsResults = UserRepository(Realm.getDefaultInstance()).getUserAccounts()
             it.configureViews(currencies, accountsResults)
         }
 
@@ -60,7 +59,6 @@ class HomeController : BaseController(), HomeViewDelegate {
     }
 
     override fun onAmountChanged(fromMoney: Money, toCurrency: CurrencyUnit) {
-        Log.v("Rx", "onAmountChanged called")
         Single.fromCallable { conversionManager.getExchangeValueTo(fromMoney, toCurrency) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -82,6 +80,9 @@ class HomeController : BaseController(), HomeViewDelegate {
             .subscribeBy(
                 onComplete = {
                     Log.v("Exchange", "Conversion success")
+                    UserRepository(Realm.getDefaultInstance()).getUserAccounts().let {
+                        contentView?.updateAccountsList(it)
+                    }
                     contentView?.showConversionResult(true, "Conversion successful")
                 },
                 onError = { err ->
@@ -98,8 +99,4 @@ class HomeController : BaseController(), HomeViewDelegate {
                 }
             )
     }
-
-    override fun getAccountsList(): RealmResults<Account> =
-        Realm.getDefaultInstance().where(Account::class.java).findAll()
-
 }

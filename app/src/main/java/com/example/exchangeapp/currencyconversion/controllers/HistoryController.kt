@@ -3,29 +3,26 @@ package com.example.exchangeapp.currencyconversion.controllers
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.exchangeapp.CurrencyConversionApplication
 import com.example.exchangeapp.common.controllers.BaseController
-import com.example.exchangeapp.currencyconversion.adapters.ExchangeHistoryAdapter
+import com.example.exchangeapp.common.repositories.ExchangeHistoryRepository
 import com.example.exchangeapp.currencyconversion.views.HistoryView
-import com.paysera.currencyconverter.currencyconversion.entities.Exchange
 import io.realm.Realm
-import kotlinx.android.synthetic.main.view_history.view.*
 
 class HistoryController : BaseController() {
 
-    override fun onCreateControllerView(inflater: LayoutInflater, container: ViewGroup): View  = HistoryView(inflater.context).also {
-        setupHistoryAdapter(it)
-    }
-    override fun inject() {
-        (applicationContext as CurrencyConversionApplication).mAppComponent.inject(this)
+    private var contentView: HistoryView? = null
+
+    override fun onCreateControllerView(inflater: LayoutInflater, container: ViewGroup): View {
+        return HistoryView(inflater.context).also { view ->
+            contentView = view
+            ExchangeHistoryRepository(Realm.getDefaultInstance()).getAllHistory().let {
+                view.setupAdapter(it)
+            }
+        }
     }
 
-    fun setupHistoryAdapter(view: View){
-        val exchangeHistory = Realm.getDefaultInstance().where(Exchange::class.java).findAll()
-        val exchangeHistoryAdapter = ExchangeHistoryAdapter(exchangeHistory)
-        view.exchangeHistoryList.adapter = exchangeHistoryAdapter
-        view.exchangeHistoryList.layoutManager = LinearLayoutManager(view.context)
-        exchangeHistoryAdapter.notifyDataSetChanged()
+    override fun inject() {
+        (applicationContext as CurrencyConversionApplication).mAppComponent.inject(this)
     }
 }
