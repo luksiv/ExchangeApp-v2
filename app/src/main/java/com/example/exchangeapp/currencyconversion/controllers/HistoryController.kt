@@ -24,8 +24,8 @@ class HistoryController : BaseController() {
     fun setupHistoryAdapter(view: View){
         val exchangeHistory = Realm.getDefaultInstance().where(Exchange::class.java).findAll()
         val exchangeHistoryAdapter = ExchangeHistoryAdapter(exchangeHistory)
-        view.rv_exchangeHistory.adapter = exchangeHistoryAdapter
-        view.rv_exchangeHistory.layoutManager = LinearLayoutManager(view.context)
+        view.exchangeHistoryList.adapter = exchangeHistoryAdapter
+        view.exchangeHistoryList.layoutManager = LinearLayoutManager(view.context)
         exchangeHistoryAdapter.notifyDataSetChanged()
     }
 }

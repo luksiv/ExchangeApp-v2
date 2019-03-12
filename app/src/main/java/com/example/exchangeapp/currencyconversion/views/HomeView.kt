@@ -1,14 +1,12 @@
 package com.example.exchangeapp.currencyconversion.views
 
 import android.content.Context
-import android.graphics.drawable.GradientDrawable
 import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.exchangeapp.R
 import com.example.exchangeapp.currencyconversion.adapters.AccountsAdapter
 import com.jakewharton.rxbinding.widget.RxAdapterView
@@ -37,18 +35,18 @@ class HomeView(context: Context) : FrameLayout(context, null) {
         View.inflate(context, R.layout.view_home, this)
 
         // region Setting onClickListeners
-        btn_exchange.setOnClickListener {
+        btnExchange.setOnClickListener {
             Log.v(
                 "Exchange",
-                "Request to convert ${et_fromAmount.text} ${spn_fromCurrency.selectedItem} to ${spn_toCurrency.selectedItem}"
+                "Request to convert ${fromAmount.text} ${fromCurrency.selectedItem} to ${toCurrency.selectedItem}"
             )
-            if (et_fromAmount.text.isNotEmpty()) {
-                if (spn_fromCurrency.selectedItem != spn_toCurrency.selectedItem) {
+            if (fromAmount.text.isNotEmpty()) {
+                if (fromCurrency.selectedItem != toCurrency.selectedItem) {
                     val fromMoney = Money.of(
-                        CurrencyUnit.of(spn_fromCurrency.selectedItem.toString()),
-                        BigDecimal(et_fromAmount.text.toString())
+                        CurrencyUnit.of(fromCurrency.selectedItem.toString()),
+                        BigDecimal(fromAmount.text.toString())
                     )
-                    val toCurrency = CurrencyUnit.of(spn_toCurrency.selectedItem.toString())
+                    val toCurrency = CurrencyUnit.of(toCurrency.selectedItem.toString())
                     homeViewDelegate?.onExchangeSubmit(fromMoney, toCurrency)
                 } else {
                     Toast.makeText(context, "Currencies must be different!", Toast.LENGTH_LONG).show()
@@ -60,13 +58,13 @@ class HomeView(context: Context) : FrameLayout(context, null) {
             }
         }
 
-        btn_toHistory.setOnClickListener {
+        btnToHistory.setOnClickListener {
             homeViewDelegate?.onHistoryClick()
         }
         // endregion
 
         // region Rx AdapterViews and TextViews
-        RxAdapterView.itemSelections(spn_toCurrency)
+        RxAdapterView.itemSelections(toCurrency)
             .subscribe(
                 { changed ->
                     Log.v("RxUpdate", "calling updateToValue to_curr")
@@ -76,7 +74,7 @@ class HomeView(context: Context) : FrameLayout(context, null) {
                     Log.e("RxSpinner", "$err")
                 }
             )
-        RxAdapterView.itemSelections(spn_fromCurrency)
+        RxAdapterView.itemSelections(fromCurrency)
             .subscribe(
                 { changed ->
                     Log.v("RxUpdate", "calling updateToValue from_curr")
@@ -87,7 +85,7 @@ class HomeView(context: Context) : FrameLayout(context, null) {
                 }
             )
 
-        RxTextView.textChanges(et_fromAmount)
+        RxTextView.textChanges(fromAmount)
             .subscribe(
                 { fromText ->
                     Log.v("RxUpdate", "calling updateToValue et_fromAmount")
@@ -114,42 +112,42 @@ class HomeView(context: Context) : FrameLayout(context, null) {
     fun configureViews(currencies: List<String>, accountsRealmResults: RealmResults<Account>) {
         val spinnerAdapter =
             ArrayAdapter<String>(context, android.R.layout.simple_spinner_dropdown_item, currencies)
-        spn_fromCurrency.adapter = spinnerAdapter
-        spn_toCurrency.adapter = spinnerAdapter
+        fromCurrency.adapter = spinnerAdapter
+        toCurrency.adapter = spinnerAdapter
 
         accountsAdapter = AccountsAdapter(accountsRealmResults)
-        rv_userAccounts.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        rv_userAccounts.adapter = accountsAdapter
+        accountsList.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        accountsList.adapter = accountsAdapter
     }
 
     fun updateExchangeValue(toMoney: Money) {
-        et_toAmount.setText(toMoney.amount.toPlainString())
+        toAmount.setText(toMoney.amount.toPlainString())
     }
     //endregion
 
     // region Private methods
     private fun getFromMoney(): Money = Money.of(
-        CurrencyUnit.of(spn_fromCurrency.selectedItem.toString()),
-        BigDecimal(et_fromAmount.text.toString())
+        CurrencyUnit.of(fromCurrency.selectedItem.toString()),
+        BigDecimal(fromAmount.text.toString())
     )
 
     private fun updateToValue() {
         Log.v("RxUpdate", "updateToValue called")
-        if (et_fromAmount.text.isNotEmpty()) {
-            if (spn_fromCurrency.selectedItem != spn_toCurrency.selectedItem) {
+        if (fromAmount.text.isNotEmpty()) {
+            if (fromCurrency.selectedItem != toCurrency.selectedItem) {
                 homeViewDelegate?.onAmountChanged(getFromMoney(), getToCurrency())
             } else {
-                et_toAmount.text = et_fromAmount.text
+                toAmount.text = fromAmount.text
             }
         }
     }
 
-    private fun getToCurrency(): CurrencyUnit = CurrencyUnit.of(spn_toCurrency.selectedItem.toString())
+    private fun getToCurrency(): CurrencyUnit = CurrencyUnit.of(toCurrency.selectedItem.toString())
 
     private fun updateAccountsList() {
-        accountsAdapter.let {
-            it.accounts = homeViewDelegate?.getAccountsList()
-            it.notifyDataSetChanged()
+        homeViewDelegate?.getAccountsList()?.let {
+            accountsAdapter.accounts = it
+            accountsAdapter.notifyDataSetChanged()
         }
     }
     // endregion

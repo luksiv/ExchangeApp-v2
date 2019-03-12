@@ -7,16 +7,16 @@
                                                    android:layout_margin="8dp">
 
     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-              android:id="@+id/tv_amountFee"
+              android:id="@+id/feeAmount"
               android:text="100.00"
               android:textSize="14sp"
-              app:layout_constraintBaseline_toBaselineOf="@+id/tv_currencyFee"
-              app:layout_constraintStart_toEndOf="@+id/tv_currencyFee" android:layout_marginLeft="4dp"
+              app:layout_constraintBaseline_toBaselineOf="@+id/feeCurrency"
+              app:layout_constraintStart_toEndOf="@+id/feeCurrency" android:layout_marginLeft="4dp"
               android:layout_marginStart="4dp"
               app:layout_constraintEnd_toEndOf="@+id/textView4" android:layout_marginEnd="8dp"
               android:layout_marginRight="8dp"/>
     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-              android:id="@+id/tv_currencyFee"
+              android:id="@+id/feeCurrency"
               android:text="€"
               android:textSize="14sp"
               android:layout_marginTop="2dp"
@@ -24,25 +24,25 @@
               android:layout_marginStart="8dp" app:layout_constraintStart_toStartOf="@+id/textView4"
               android:layout_marginLeft="8dp"/>
     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-              android:id="@+id/tv_currency"
+              android:id="@+id/accountCurrency"
               android:text="€"
               android:textSize="24sp"
-              app:layout_constraintEnd_toStartOf="@+id/tv_amount"
-              android:layout_marginTop="4dp" app:layout_constraintTop_toBottomOf="@+id/tv_accountName"
-              app:layout_constraintStart_toStartOf="@+id/tv_accountName"/>
+              app:layout_constraintEnd_toStartOf="@+id/accountBalance"
+              android:layout_marginTop="4dp" app:layout_constraintTop_toBottomOf="@+id/accountName"
+              app:layout_constraintStart_toStartOf="@+id/accountName"/>
     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-              android:id="@+id/tv_amount"
+              android:id="@+id/accountBalance"
               android:text="100.00"
               android:textSize="24sp"
-              app:layout_constraintStart_toEndOf="@+id/tv_currency" android:layout_marginLeft="4dp"
+              app:layout_constraintStart_toEndOf="@+id/accountCurrency" android:layout_marginLeft="4dp"
               android:layout_marginStart="4dp"
-              app:layout_constraintEnd_toEndOf="@+id/tv_accountName"
-              app:layout_constraintBaseline_toBaselineOf="@+id/tv_currency"/>
+              app:layout_constraintEnd_toEndOf="@+id/accountName"
+              app:layout_constraintBaseline_toBaselineOf="@+id/accountCurrency"/>
     <TextView
             android:text="EUR ACCOUNT"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/tv_accountName" app:layout_constraintStart_toStartOf="parent"
+            android:id="@+id/accountName" app:layout_constraintStart_toStartOf="parent"
             android:layout_marginLeft="4dp"
             android:layout_marginStart="4dp" android:layout_marginTop="8dp" app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="4dp" android:layout_marginRight="4dp"
@@ -51,11 +51,11 @@
             android:text="Applied fees"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/textView4" app:layout_constraintStart_toStartOf="@+id/tv_currency"
+            android:id="@+id/textView4" app:layout_constraintStart_toStartOf="@+id/accountCurrency"
             android:layout_marginLeft="8dp" android:layout_marginStart="8dp"
-            app:layout_constraintEnd_toEndOf="@+id/tv_amount" android:layout_marginEnd="8dp"
+            app:layout_constraintEnd_toEndOf="@+id/accountBalance" android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp" android:layout_marginTop="4dp"
-            app:layout_constraintTop_toBottomOf="@+id/tv_amount" android:textSize="14sp"/>
+            app:layout_constraintTop_toBottomOf="@+id/accountBalance" android:textSize="14sp"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

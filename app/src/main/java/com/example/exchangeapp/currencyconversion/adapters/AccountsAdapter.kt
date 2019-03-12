@@ -27,11 +27,11 @@ class AccountsAdapter(var accounts: RealmResults<Account>) : RecyclerView.Adapte
             val account = accounts[position]
             val appliedFees = account?.getAppliedFeesSum()
             itemView.let {
-                it.tv_accountName.text = account.name
-                it.tv_currency.text = account.getBalance()?.currencyUnit?.symbol
-                it.tv_amount.text = account.getBalance()?.amount.toString()
-                it.tv_currencyFee.text = account.getBalance()?.currencyUnit?.symbol
-                it.tv_amountFee.text = appliedFees?.amount.toString()
+                it.accountName.text = account.name
+                it.accountCurrency.text = account.getBalance()?.currencyUnit?.symbol
+                it.accountBalance.text = account.getBalance()?.amount.toString()
+                it.feeCurrency.text = account.getBalance()?.currencyUnit?.symbol
+                it.feeAmount.text = appliedFees?.amount.toString()
             }
         }
     }

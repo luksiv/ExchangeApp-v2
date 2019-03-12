@@ -69,7 +69,7 @@ class CurrencyConversionHelper @Inject internal constructor(
     }
 
     private fun calculateExchangeFee(money: Money): Money = when (isExchangeFree()) {
-        true -> Money.of(money.currencyUnit, BigDecimal("0"))
+        true -> Money.of(money.currencyUnit, 0.toBigDecimal())
         false -> money.multipliedBy(feeProcentage, RoundingMode.HALF_DOWN)
     }
 
