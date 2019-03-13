@@ -3,20 +3,21 @@ package com.example.exchangeapp.currencyconversion.views
 import android.content.Context
 import android.util.Log
 import android.view.View
-import android.widget.*
+import android.widget.ArrayAdapter
+import android.widget.FrameLayout
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.exchangeapp.R
 import com.example.exchangeapp.common.AppConstants
 import com.example.exchangeapp.currencyconversion.adapters.AccountsAdapter
 import com.example.exchangeapp.currencyconversion.entities.Account
-import com.jakewharton.rxbinding.widget.*
+import com.jakewharton.rxbinding.widget.RxTextView
+import com.jakewharton.rxbinding.widget.selectionEvents
 import io.realm.RealmList
-import io.realm.RealmResults
 import kotlinx.android.synthetic.main.view_home.view.*
 import org.joda.money.CurrencyUnit
 import org.joda.money.Money
 import java.math.BigDecimal
-import java.util.concurrent.TimeUnit
 
 interface HomeViewDelegate {
     fun onAmountChanged(fromMoney: Money, toCurrency: CurrencyUnit)
@@ -30,14 +31,12 @@ class HomeView(context: Context) : FrameLayout(context, null) {
     private lateinit var accountsAdapter: AccountsAdapter
     private var fromSpinnerAdapter: ArrayAdapter<String>? = null
     private var toSpinnerAdapter: ArrayAdapter<String>? = null
-
     private var fromCurrencyUnit: String = "EUR"
     private var toCurrencyUnit: String = "USD"
 
     init {
         View.inflate(context, R.layout.view_home, this)
         setCurrencySpinners()
-        // region Setting onClickListeners
         btnExchange.setOnClickListener {
             Log.v(
                 "Exchange",
@@ -64,9 +63,6 @@ class HomeView(context: Context) : FrameLayout(context, null) {
         btnToHistory.setOnClickListener {
             homeViewDelegate?.onHistoryClick()
         }
-        // endregion
-
-        // region RxTextView
 
         RxTextView.textChanges(fromAmount)
             .subscribe(
@@ -77,11 +73,8 @@ class HomeView(context: Context) : FrameLayout(context, null) {
                     Log.e("RxTextView", "$err")
                 }
             )
-        // endregion
-
     }
 
-    //region Public methods
     fun showConversionResult(succeeded: Boolean, reason: String = "") {
         if (succeeded) {
             Toast.makeText(context, "Conversion successful", Toast.LENGTH_SHORT).show()
@@ -139,9 +132,6 @@ class HomeView(context: Context) : FrameLayout(context, null) {
         accountsAdapter.updateAccounts(accounts)
     }
 
-//endregion
-
-    // region Private methods
     private fun getFromMoney(): Money = Money.of(
         CurrencyUnit.of(fromCurrency.selectedItem.toString()),
         BigDecimal(fromAmount.text.toString())
@@ -174,5 +164,4 @@ class HomeView(context: Context) : FrameLayout(context, null) {
 
     private fun getFilteredCurrencyList(predicate: (String) -> Boolean): List<String> =
         AppConstants.currencies.map { it.currencyCode }.filter { predicate(it) }
-    // endregion
 }
