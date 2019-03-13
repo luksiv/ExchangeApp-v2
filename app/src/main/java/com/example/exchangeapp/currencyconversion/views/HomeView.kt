@@ -13,11 +13,14 @@ import com.example.exchangeapp.currencyconversion.adapters.AccountsAdapter
 import com.example.exchangeapp.currencyconversion.entities.Account
 import com.jakewharton.rxbinding.widget.RxTextView
 import com.jakewharton.rxbinding.widget.selectionEvents
+import io.reactivex.Emitter
+import io.reactivex.subjects.PublishSubject
 import io.realm.RealmList
 import kotlinx.android.synthetic.main.view_home.view.*
 import org.joda.money.CurrencyUnit
 import org.joda.money.Money
 import java.math.BigDecimal
+import java.util.concurrent.TimeUnit
 
 interface HomeViewDelegate {
     fun onAmountChanged(fromMoney: Money, toCurrency: CurrencyUnit)
@@ -34,8 +37,18 @@ class HomeView(context: Context) : FrameLayout(context, null) {
     private var fromCurrencyUnit: String = "EUR"
     private var toCurrencyUnit: String = "USD"
 
+    private val subject: PublishSubject<Int> = PublishSubject.create()
+
     init {
         View.inflate(context, R.layout.view_home, this)
+        subject
+            .debounce(500L, TimeUnit.MILLISECONDS)
+            .subscribe(
+                {
+                    updateToValue()
+                }
+            )
+
         setCurrencySpinners()
         btnExchange.setOnClickListener {
             Log.v(
@@ -67,7 +80,7 @@ class HomeView(context: Context) : FrameLayout(context, null) {
         RxTextView.textChanges(fromAmount)
             .subscribe(
                 {
-                    updateToValue()
+                    subject.onNext(1)
                 },
                 { err ->
                     Log.e("RxTextView", "$err")
@@ -101,7 +114,7 @@ class HomeView(context: Context) : FrameLayout(context, null) {
                     {
                         fromCurrencyUnit = spinner.selectedItem.toString()
                         updateCurrencySpinners()
-                        updateToValue()
+                        subject.onNext(2)
                     },
                     { err ->
                         Log.e("fromSpinner", "ERROR: $err")
@@ -115,7 +128,7 @@ class HomeView(context: Context) : FrameLayout(context, null) {
                     {
                         toCurrencyUnit = spinner.selectedItem.toString()
                         updateCurrencySpinners()
-                        updateToValue()
+                        subject.onNext(3)
                     },
                     { err ->
                         Log.e("toSpinner", "ERROR: $err")
@@ -143,14 +156,14 @@ class HomeView(context: Context) : FrameLayout(context, null) {
             it.clear()
             it.addAll(fromList)
             fromCurrency.setSelection(fromList.indexOf(fromCurrencyUnit))
-            it.notifyDataSetChanged()
+            //it.notifyDataSetChanged()
         }
         toSpinnerAdapter?.let {
             val toList = getFilteredCurrencyList { it != fromCurrencyUnit }
             it.clear()
             it.addAll(toList)
             toCurrency.setSelection(toList.indexOf(toCurrencyUnit))
-            it.notifyDataSetChanged()
+            //it.notifyDataSetChanged()
         }
     }
 
