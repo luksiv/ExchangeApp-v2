@@ -4,10 +4,11 @@ import android.util.Log
 import com.example.exchangeapp.common.repositories.ExchangeHistoryRepository
 import com.example.exchangeapp.common.services.BalanceManager
 import com.example.exchangeapp.currencyconversion.api.CurrencyConversionApiClient
+import com.example.exchangeapp.currencyconversion.api.EVPApiResponse
 import com.example.exchangeapp.currencyconversion.entities.Exchange
 import com.example.exchangeapp.currencyconversion.exceptions.BalanceInsufficientException
 import io.reactivex.Completable
-import io.reactivex.schedulers.Schedulers
+import io.reactivex.Single
 import io.realm.Realm
 import org.joda.money.CurrencyUnit
 import org.joda.money.Money
@@ -26,31 +27,27 @@ class CurrencyConversionHelper @Inject internal constructor(
         const val feePercentage = 0.007 // 0.7%
     }
 
-    fun getExchangeValueTo(from: Money, to: CurrencyUnit): Money {
+    fun getExchangeValueTo(from: Money, to: CurrencyUnit): Single<EVPApiResponse> {
         return currencyConversionApiClient.calculate(from, to.currencyCode)
-            .subscribeOn(Schedulers.io())
-            .blockingGet()
-            .getAmountMoney()
     }
 
     fun performExchange(from: Money, to: CurrencyUnit): Completable {
         return Completable.fromAction {
             if (balanceManager.isBalanceSufficient(from)) {
-                Log.v("Exchange", "From: $from")
                 val fee = calculateExchangeFee(from)
-                Log.v("Exchange", "Fee: $fee")
                 val adjustedFrom = from.minus(fee)
-                Log.v("Exchange", "Adjusted from: $adjustedFrom")
-                val exchangeValue = getExchangeValueTo(adjustedFrom, to)
-                Log.v("Exchange", "Exchange value: $exchangeValue")
+                val exchangeValue = getExchangeValueTo(adjustedFrom, to).blockingGet().getAmountMoney()
                 balanceManager.exchange(from, exchangeValue)
                 registerExchange(from, exchangeValue, fee)
+                Log.v("Exchange", "From: $from")
+                Log.v("Exchange", "Fee: $fee")
+                Log.v("Exchange", "Adjusted from: $adjustedFrom")
+                Log.v("Exchange", "Exchange value: $exchangeValue")
             } else {
                 Log.e("Exchange", "Request denied! Not enough money!")
                 throw BalanceInsufficientException()
             }
         }
-
     }
 
     private fun registerExchange(from: Money, to: Money, fee: Money) {

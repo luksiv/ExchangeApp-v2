@@ -2,6 +2,7 @@ package com.example.exchangeapp.currencyconversion.views
 
 import android.content.Context
 import android.text.Editable
+import android.text.InputType
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
@@ -76,6 +77,13 @@ class HomeView(context: Context) : FrameLayout(context, null) {
 
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 fromCurrencyUnit = fromCurrency.selectedItem.toString()
+                if(fromCurrencyUnit == "JPY"){
+                    if(fromAmount.text.isNotEmpty()) fromAmount.setText(fromAmount.text.toString().toDouble().toInt().toString())
+                    fromAmount.inputType = InputType.TYPE_CLASS_NUMBER
+
+                } else {
+                    fromAmount.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+                }
                 updateCurrencySpinners()
                 updateToValue()
             }
@@ -112,9 +120,9 @@ class HomeView(context: Context) : FrameLayout(context, null) {
 
     fun showConversionResult(succeeded: Boolean, reason: String = "") {
         if (succeeded) {
-            Toast.makeText(context, "Conversion successful", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "ConversionViewModel successful", Toast.LENGTH_SHORT).show()
         } else {
-            Toast.makeText(context, "Conversion unsuccessful ($reason)", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "ConversionViewModel unsuccessful ($reason)", Toast.LENGTH_SHORT).show()
         }
     }
 
