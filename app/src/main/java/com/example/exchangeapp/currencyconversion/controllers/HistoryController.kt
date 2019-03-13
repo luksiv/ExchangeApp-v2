@@ -16,9 +16,10 @@ class HistoryController : BaseController() {
     override fun onCreateControllerView(inflater: LayoutInflater, container: ViewGroup): View {
         return HistoryView(inflater.context).also { view ->
             contentView = view
-            ExchangeHistoryRepository(Realm.getDefaultInstance()).getAllHistory().let {
-                view.setupAdapter(it)
+            val historyList = Realm.getDefaultInstance().let {
+                ExchangeHistoryRepository(it).getAllHistory()
             }
+            view.setupAdapter(historyList)
         }
     }
 

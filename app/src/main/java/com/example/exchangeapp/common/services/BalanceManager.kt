@@ -8,11 +8,6 @@ import javax.inject.Singleton
 
 @Singleton
 class BalanceManager {
-
-
-    fun isCurrencyAvailable(currencyUnit: CurrencyUnit): Boolean =
-        Realm.getDefaultInstance().where(Account::class.java).equalTo("currency", currencyUnit.currencyCode).isValid
-
     fun isBalanceSufficient(moneyRequired: Money): Boolean {
         val realm = Realm.getDefaultInstance()
         if (isCurrencyAvailable(moneyRequired.currencyUnit)) {
@@ -26,12 +21,16 @@ class BalanceManager {
     fun exchange(from: Money, to: Money) {
         Realm.getDefaultInstance().use {
             it.executeTransaction {
-                val accountFrom = it.where(Account::class.java).equalTo("currency", from.currencyUnit.currencyCode).findFirst()
-                val accountTo = it.where(Account::class.java).equalTo("currency", to.currencyUnit.currencyCode).findFirst()
+                val accountFrom =
+                    it.where(Account::class.java).equalTo("currency", from.currencyUnit.currencyCode).findFirst()
+                val accountTo =
+                    it.where(Account::class.java).equalTo("currency", to.currencyUnit.currencyCode).findFirst()
                 accountFrom.setBalance(accountFrom.getBalance().minus(from))
                 accountTo.setBalance(accountTo.getBalance().plus(to))
             }
         }
     }
 
+    private fun isCurrencyAvailable(currencyUnit: CurrencyUnit): Boolean =
+        Realm.getDefaultInstance().where(Account::class.java).equalTo("currency", currencyUnit.currencyCode).isValid
 }

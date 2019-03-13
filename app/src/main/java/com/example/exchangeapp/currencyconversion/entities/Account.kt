@@ -1,6 +1,6 @@
 package com.example.exchangeapp.currencyconversion.entities
 
-import android.util.Log
+import com.example.exchangeapp.common.repositories.ExchangeHistoryRepository
 import io.realm.Realm
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
@@ -32,11 +32,9 @@ open class Account(
 
     fun getAppliedFeesSum(): Money {
         var appliedFees = Money.of(currencyUnit, 0.toBigDecimal())
-        Realm.getDefaultInstance().executeTransaction {
-            it.where(Exchange::class.java)
-                .equalTo("currencyFrom", currencyUnit.currencyCode)
-                .findAll()
-                .filter { it.feeAmount != "0.00" }
+        Realm.getDefaultInstance().let {
+            ExchangeHistoryRepository(it).getAllFromCurrencyHistory(currencyUnit)
+                .filter { exchange ->  exchange.feeAmount != "0.00" }
                 .map { appliedFees = appliedFees.plus(BigDecimal(it.feeAmount)) }
         }
         return appliedFees

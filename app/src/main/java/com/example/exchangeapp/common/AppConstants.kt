@@ -8,5 +8,4 @@ object AppConstants {
         CurrencyUnit.of("USD"),
         CurrencyUnit.of("JPY")
     )
-
 }

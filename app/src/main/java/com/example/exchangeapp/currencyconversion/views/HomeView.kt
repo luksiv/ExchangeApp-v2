@@ -13,13 +13,11 @@ import com.example.exchangeapp.currencyconversion.adapters.AccountsAdapter
 import com.example.exchangeapp.currencyconversion.entities.Account
 import com.jakewharton.rxbinding.widget.RxTextView
 import com.jakewharton.rxbinding.widget.selectionEvents
-import io.reactivex.subjects.PublishSubject
 import io.realm.RealmList
 import kotlinx.android.synthetic.main.view_home.view.*
 import org.joda.money.CurrencyUnit
 import org.joda.money.Money
 import java.math.BigDecimal
-import java.util.concurrent.TimeUnit
 
 interface HomeViewDelegate {
     fun onAmountChanged(fromMoney: Money, toCurrency: CurrencyUnit)
@@ -36,17 +34,8 @@ class HomeView(context: Context) : FrameLayout(context, null) {
     private var fromCurrencyUnit: String = "EUR"
     private var toCurrencyUnit: String = "USD"
 
-    private val subject: PublishSubject<Int> = PublishSubject.create()
-
     init {
         View.inflate(context, R.layout.view_home, this)
-        subject
-            .debounce(500L, TimeUnit.MILLISECONDS)
-            .subscribe(
-                {
-                    updateToValue()
-                }
-            )
 
         setCurrencySpinners()
         btnExchange.setOnClickListener {
@@ -79,7 +68,7 @@ class HomeView(context: Context) : FrameLayout(context, null) {
         RxTextView.textChanges(fromAmount)
             .subscribe(
                 {
-                    subject.onNext(1)
+                    updateToValue()
                 },
                 { err ->
                     Log.e("RxTextView", "$err")
@@ -113,7 +102,7 @@ class HomeView(context: Context) : FrameLayout(context, null) {
                     {
                         fromCurrencyUnit = spinner.selectedItem.toString()
                         updateCurrencySpinners()
-                        subject.onNext(2)
+                        updateToValue()
                     },
                     { err ->
                         Log.e("fromSpinner", "ERROR: $err")
@@ -127,7 +116,7 @@ class HomeView(context: Context) : FrameLayout(context, null) {
                     {
                         toCurrencyUnit = spinner.selectedItem.toString()
                         updateCurrencySpinners()
-                        subject.onNext(3)
+                        updateToValue()
                     },
                     { err ->
                         Log.e("toSpinner", "ERROR: $err")
@@ -167,6 +156,8 @@ class HomeView(context: Context) : FrameLayout(context, null) {
     private fun updateToValue() {
         if (fromAmount.text.isNotEmpty()) {
             homeViewDelegate?.onAmountChanged(getFromMoney(), getToCurrency())
+        } else {
+            toAmount.setText("")
         }
     }
 
