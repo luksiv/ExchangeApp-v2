@@ -14,13 +14,11 @@ import com.example.exchangeapp.currencyconversion.exceptions.BalanceInsufficient
 import com.example.exchangeapp.common.repositories.UserRepository
 import com.example.exchangeapp.currencyconversion.views.HomeView
 import com.example.exchangeapp.currencyconversion.views.HomeViewDelegate
-import com.example.exchangeapp.currencyconversion.entities.Account
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import io.realm.Realm
-import io.realm.RealmResults
 import org.joda.money.CurrencyUnit
 import org.joda.money.Money
 import javax.inject.Inject
@@ -45,9 +43,9 @@ class HomeController : BaseController(), HomeViewDelegate {
 
             contentView = it
             it.homeViewDelegate = this
-            val currencies = AppConstants.currencies.map { currencyUnit -> currencyUnit.currencyCode }.toList()
             val accountsResults = UserRepository(Realm.getDefaultInstance()).getUserAccounts()
-            it.configureViews(currencies, accountsResults)
+            it.setupAccountAdapter(accountsResults)
+            it.setCurrencySpinners()
         }
 
     override fun onHistoryClick() {
