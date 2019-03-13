@@ -1,13 +1,13 @@
-package com.paysera.currencyconverter.common.dagger
+package com.example.exchangeapp.common.dagger
 
 import android.app.Application
 import android.content.Context
 import com.example.exchangeapp.common.repositories.UserRepository
 import com.example.exchangeapp.common.services.BalanceManager
 import com.example.exchangeapp.currencyconversion.helpers.CurrencyConversionHelper
-import com.paysera.currencyconverter.currencyconversion.SchedulerProvider
-import com.paysera.currencyconverter.currencyconversion.api.CurrencyConversionApiClient
-import com.paysera.currencyconverter.currencyconversion.services.EVPApiService
+import com.example.exchangeapp.common.SchedulerProvider
+import com.example.exchangeapp.currencyconversion.api.CurrencyConversionApiClient
+import com.example.exchangeapp.currencyconversion.api.EVPApiService
 import dagger.Module
 import dagger.Provides
 import io.reactivex.disposables.CompositeDisposable
@@ -19,7 +19,6 @@ import javax.inject.Singleton
 
 @Module
 class AppModule {
-
     @Provides
     @Singleton
     internal fun provideContext(application: Application): Context = application
@@ -35,8 +34,8 @@ class AppModule {
 
     @Provides
     @Singleton
-    internal fun provideCurrencyConversionApiClient(mEVPApiService: EVPApiService): CurrencyConversionApiClient =
-        CurrencyConversionApiClient(mEVPApiService)
+    internal fun provideCurrencyConversionApiClient(evpApiService: EVPApiService): CurrencyConversionApiClient =
+        CurrencyConversionApiClient(evpApiService)
 
     @Provides
     @Singleton

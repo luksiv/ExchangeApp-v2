@@ -1,4 +1,4 @@
-package com.paysera.currencyconverter.currencyconversion.services
+package com.example.exchangeapp.currencyconversion.api
 
 import io.reactivex.Single
 import retrofit2.http.GET
@@ -12,8 +12,9 @@ interface EVPApiService {
     }
 
     @GET("{amount}-{currencyFrom}/{currencyTo}/latest")
-    fun getExchangeValue(@Path("amount") amount: BigDecimal,
-                         @Path("currencyFrom") currencyFrom: String,
-                         @Path("currencyTo") currencyTo: String): Single<EVPApiResponse>
-
+    fun getExchangeValue(
+        @Path("amount") amount: BigDecimal,
+        @Path("currencyFrom") currencyFrom: String,
+        @Path("currencyTo") currencyTo: String
+    ): Single<EVPApiResponse>
 }

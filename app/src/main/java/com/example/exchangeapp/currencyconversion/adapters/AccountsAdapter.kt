@@ -10,7 +10,6 @@ import io.realm.RealmList
 import kotlinx.android.synthetic.main.account_item.view.*
 
 class AccountsAdapter(var accounts: RealmList<Account>) : RecyclerView.Adapter<AccountsAdapter.ViewHolder>() {
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.account_item, parent, false)
         return ViewHolder(view)
@@ -22,7 +21,7 @@ class AccountsAdapter(var accounts: RealmList<Account>) : RecyclerView.Adapter<A
 
     override fun getItemCount(): Int = accounts.size
 
-    fun updateAccounts(accounts: RealmList<Account>){
+    fun updateAccounts(accounts: RealmList<Account>) {
         this.accounts = accounts
         this.notifyDataSetChanged()
     }

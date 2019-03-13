@@ -10,7 +10,8 @@ class ExchangeHistoryRepository(realm: Realm) : EntityRepository<Exchange>(realm
 
     fun getExchangeCount(): Int = getAllHistory().size
 
-    fun getAllFromCurrencyHistory(currency: CurrencyUnit): RealmResults<Exchange> = queryBuilder().equalTo("currencyFrom", currency.currencyCode).findAll()
+    fun getAllFromCurrencyHistory(currency: CurrencyUnit): RealmResults<Exchange> =
+        queryBuilder().equalTo("currencyFrom", currency.currencyCode).findAll()
 
     override fun getPersistentType(): Class<Exchange> = Exchange::class.java
 }

@@ -11,7 +11,6 @@ import io.realm.RealmResults
 import kotlinx.android.synthetic.main.view_history.view.*
 
 class HistoryView(context: Context) : FrameLayout(context, null) {
-
     private lateinit var historyAdapter: ExchangeHistoryAdapter
 
     init {

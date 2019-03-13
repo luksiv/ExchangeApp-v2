@@ -1,6 +1,5 @@
-package com.paysera.currencyconverter.currencyconversion.api
+package com.example.exchangeapp.currencyconversion.api
 
-import com.paysera.currencyconverter.currencyconversion.services.EVPApiResponse
 import io.reactivex.Single
 import org.joda.money.Money
 

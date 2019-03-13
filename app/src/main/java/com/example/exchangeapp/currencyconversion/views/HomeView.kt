@@ -1,8 +1,11 @@
 package com.example.exchangeapp.currencyconversion.views
 
 import android.content.Context
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.View
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.FrameLayout
 import android.widget.Toast
@@ -11,8 +14,7 @@ import com.example.exchangeapp.R
 import com.example.exchangeapp.common.AppConstants
 import com.example.exchangeapp.currencyconversion.adapters.AccountsAdapter
 import com.example.exchangeapp.currencyconversion.entities.Account
-import com.jakewharton.rxbinding.widget.RxTextView
-import com.jakewharton.rxbinding.widget.selectionEvents
+import io.reactivex.disposables.CompositeDisposable
 import io.realm.RealmList
 import kotlinx.android.synthetic.main.view_home.view.*
 import org.joda.money.CurrencyUnit
@@ -26,7 +28,6 @@ interface HomeViewDelegate {
 }
 
 class HomeView(context: Context) : FrameLayout(context, null) {
-
     var homeViewDelegate: HomeViewDelegate? = null
     private lateinit var accountsAdapter: AccountsAdapter
     private var fromSpinnerAdapter: ArrayAdapter<String>? = null
@@ -34,10 +35,13 @@ class HomeView(context: Context) : FrameLayout(context, null) {
     private var fromCurrencyUnit: String = "EUR"
     private var toCurrencyUnit: String = "USD"
 
+    val compositeDisposable: CompositeDisposable = CompositeDisposable()
+
     init {
         View.inflate(context, R.layout.view_home, this)
 
         setCurrencySpinners()
+
         btnExchange.setOnClickListener {
             Log.v(
                 "Exchange",
@@ -65,15 +69,45 @@ class HomeView(context: Context) : FrameLayout(context, null) {
             homeViewDelegate?.onHistoryClick()
         }
 
-        RxTextView.textChanges(fromAmount)
-            .subscribe(
-                {
-                    updateToValue()
-                },
-                { err ->
-                    Log.e("RxTextView", "$err")
-                }
-            )
+        fromCurrency.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+
+            }
+
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                fromCurrencyUnit = fromCurrency.selectedItem.toString()
+                updateCurrencySpinners()
+                updateToValue()
+            }
+
+        }
+
+        toCurrency.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+
+            }
+
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                toCurrencyUnit = toCurrency.selectedItem.toString()
+                updateCurrencySpinners()
+                updateToValue()
+            }
+
+        }
+
+        fromAmount.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                updateToValue()
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                //nothing
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                //nothing
+            }
+        })
     }
 
     fun showConversionResult(succeeded: Boolean, reason: String = "") {
@@ -95,34 +129,8 @@ class HomeView(context: Context) : FrameLayout(context, null) {
         val toList = getFilteredCurrencyList { it != fromCurrencyUnit }
         fromSpinnerAdapter = ArrayAdapter(context, android.R.layout.simple_spinner_dropdown_item, fromList)
         toSpinnerAdapter = ArrayAdapter(context, android.R.layout.simple_spinner_dropdown_item, toList)
-        fromCurrency.let { spinner ->
-            spinner.adapter = fromSpinnerAdapter
-            spinner.selectionEvents()
-                .subscribe(
-                    {
-                        fromCurrencyUnit = spinner.selectedItem.toString()
-                        updateCurrencySpinners()
-                        updateToValue()
-                    },
-                    { err ->
-                        Log.e("fromSpinner", "ERROR: $err")
-                    }
-                )
-        }
-        toCurrency.let { spinner ->
-            spinner.adapter = toSpinnerAdapter
-            spinner.selectionEvents()
-                .subscribe(
-                    {
-                        toCurrencyUnit = spinner.selectedItem.toString()
-                        updateCurrencySpinners()
-                        updateToValue()
-                    },
-                    { err ->
-                        Log.e("toSpinner", "ERROR: $err")
-                    }
-                )
-        }
+        fromCurrency.adapter = fromSpinnerAdapter
+        toCurrency.adapter = toSpinnerAdapter
     }
 
     fun updateExchangeValue(toMoney: Money) {
@@ -132,11 +140,6 @@ class HomeView(context: Context) : FrameLayout(context, null) {
     fun updateAccountsList(accounts: RealmList<Account>) {
         accountsAdapter.updateAccounts(accounts)
     }
-
-    private fun getFromMoney(): Money = Money.of(
-        CurrencyUnit.of(fromCurrency.selectedItem.toString()),
-        BigDecimal(fromAmount.text.toString())
-    )
 
     private fun updateCurrencySpinners() {
         fromSpinnerAdapter?.let {
@@ -160,6 +163,11 @@ class HomeView(context: Context) : FrameLayout(context, null) {
             toAmount.setText("")
         }
     }
+
+    private fun getFromMoney(): Money = Money.of(
+        CurrencyUnit.of(fromCurrency.selectedItem.toString()),
+        BigDecimal(fromAmount.text.toString())
+    )
 
     private fun getToCurrency(): CurrencyUnit = CurrencyUnit.of(toCurrency.selectedItem.toString())
 

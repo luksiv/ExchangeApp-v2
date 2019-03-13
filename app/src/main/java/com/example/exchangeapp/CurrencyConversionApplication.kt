@@ -2,7 +2,7 @@ package com.example.exchangeapp
 
 import android.app.Activity
 import android.app.Application
-import com.paysera.currencyconverter.common.dagger.AppComponent
+import com.example.exchangeapp.common.dagger.AppComponent
 import com.paysera.currencyconverter.common.dagger.DaggerAppComponent
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasActivityInjector
@@ -12,20 +12,20 @@ import javax.inject.Inject
 
 class CurrencyConversionApplication
     :
-        Application(),
-        HasActivityInjector {
+    Application(),
+    HasActivityInjector {
     @Inject
     internal lateinit var activityDispatchingAndroidInjector: DispatchingAndroidInjector<Activity>
 
-    lateinit var mAppComponent: AppComponent
+    lateinit var appComponent: AppComponent
 
     override fun onCreate() {
         super.onCreate()
-        mAppComponent = DaggerAppComponent.builder()
-                .application(this)
-                .build()
+        appComponent = DaggerAppComponent.builder()
+            .application(this)
+            .build()
 
-        mAppComponent.inject(this)
+        appComponent.inject(this)
 
         Realm.init(this)
         val config = RealmConfiguration.Builder().deleteRealmIfMigrationNeeded().build()

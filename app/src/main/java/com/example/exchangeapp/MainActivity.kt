@@ -10,7 +10,7 @@ import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
-    lateinit var mRouter: Router
+    private lateinit var mRouter: Router
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity() {
         AndroidInjection.inject(this)
 
         mRouter = Conductor.attachRouter(this, conductorChangeHandler, savedInstanceState)
-        if(!mRouter.hasRootController()){
+        if (!mRouter.hasRootController()) {
             mRouter.setRoot(RouterTransaction.with(HomeController()))
         }
     }

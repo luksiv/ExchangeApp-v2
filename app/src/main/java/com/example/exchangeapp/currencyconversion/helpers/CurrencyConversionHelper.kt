@@ -3,9 +3,9 @@ package com.example.exchangeapp.currencyconversion.helpers
 import android.util.Log
 import com.example.exchangeapp.common.repositories.ExchangeHistoryRepository
 import com.example.exchangeapp.common.services.BalanceManager
+import com.example.exchangeapp.currencyconversion.api.CurrencyConversionApiClient
 import com.example.exchangeapp.currencyconversion.entities.Exchange
 import com.example.exchangeapp.currencyconversion.exceptions.BalanceInsufficientException
-import com.paysera.currencyconverter.currencyconversion.api.CurrencyConversionApiClient
 import io.reactivex.Completable
 import io.reactivex.schedulers.Schedulers
 import io.realm.Realm

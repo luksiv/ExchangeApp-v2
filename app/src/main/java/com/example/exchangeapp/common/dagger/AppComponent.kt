@@ -1,4 +1,4 @@
-package com.paysera.currencyconverter.common.dagger
+package com.example.exchangeapp.common.dagger
 
 import android.app.Application
 import com.example.exchangeapp.CurrencyConversionApplication
@@ -16,6 +16,7 @@ interface AppComponent {
     interface Builder {
         @BindsInstance
         fun application(application: Application): Builder
+
         fun build(): AppComponent
     }
 

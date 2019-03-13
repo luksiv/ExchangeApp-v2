@@ -10,7 +10,6 @@ import com.example.exchangeapp.currencyconversion.views.HistoryView
 import io.realm.Realm
 
 class HistoryController : BaseController() {
-
     private var contentView: HistoryView? = null
 
     override fun onCreateControllerView(inflater: LayoutInflater, container: ViewGroup): View {
@@ -24,6 +23,6 @@ class HistoryController : BaseController() {
     }
 
     override fun inject() {
-        (applicationContext as CurrencyConversionApplication).mAppComponent.inject(this)
+        (applicationContext as CurrencyConversionApplication).appComponent.inject(this)
     }
 }

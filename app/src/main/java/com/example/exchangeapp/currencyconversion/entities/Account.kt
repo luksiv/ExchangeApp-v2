@@ -19,7 +19,6 @@ open class Account(
     @Required
     var balance: String = ""
 ) : RealmObject() {
-
     private val currencyUnit: CurrencyUnit
         get() {
             return CurrencyUnit.of(currency)
@@ -34,7 +33,7 @@ open class Account(
         var appliedFees = Money.of(currencyUnit, 0.toBigDecimal())
         Realm.getDefaultInstance().let {
             ExchangeHistoryRepository(it).getAllFromCurrencyHistory(currencyUnit)
-                .filter { exchange ->  exchange.feeAmount != "0.00" }
+                .filter { exchange -> exchange.feeAmount != "0.00" }
                 .map { appliedFees = appliedFees.plus(BigDecimal(it.feeAmount)) }
         }
         return appliedFees

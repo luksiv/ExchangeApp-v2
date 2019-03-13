@@ -24,14 +24,13 @@ import org.joda.money.Money
 import javax.inject.Inject
 
 class HomeController : BaseController(), HomeViewDelegate {
-
     @Inject
     lateinit var conversionManager: CurrencyConversionHelper
     private val compositeDisposable = CompositeDisposable()
     private var contentView: HomeView? = null
 
     override fun inject() {
-        (applicationContext as CurrencyConversionApplication).mAppComponent.inject(this)
+        (applicationContext as CurrencyConversionApplication).appComponent.inject(this)
     }
 
     override fun onCreateControllerView(inflater: LayoutInflater, container: ViewGroup): View =
@@ -56,6 +55,7 @@ class HomeController : BaseController(), HomeViewDelegate {
     override fun onDetach(view: View) {
         super.onDetach(view)
         compositeDisposable.clear()
+        contentView?.compositeDisposable?.clear()
     }
 
     override fun onHistoryClick() {
@@ -67,50 +67,48 @@ class HomeController : BaseController(), HomeViewDelegate {
     }
 
     override fun onAmountChanged(fromMoney: Money, toCurrency: CurrencyUnit) {
-        compositeDisposable.add(
-            Single.fromCallable { conversionManager.getExchangeValueTo(fromMoney, toCurrency) }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { toMoney ->
-                        Log.v("onAmountChangedExchange", "$fromMoney -> $toMoney")
-                        contentView?.updateExchangeValue(toMoney)
-                    },
-                    { err ->
-                        Log.e("onAmountChangedEx", "$err")
-                    }
-                )
-        )
+        Single.fromCallable { conversionManager.getExchangeValueTo(fromMoney, toCurrency) }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { toMoney ->
+                    Log.v("onAmountChangedExchange", "$fromMoney -> $toMoney")
+                    contentView?.updateExchangeValue(toMoney)
+                },
+                { err ->
+                    Log.e("onAmountChangedEx", "$err")
+                }
+            )
+
     }
 
     override fun onExchangeSubmit(fromMoney: Money, toCurrency: CurrencyUnit) {
-        compositeDisposable.add(
-            conversionManager.performExchange(fromMoney, toCurrency)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(
-                    onComplete = {
-                        Log.v("Exchange", "Conversion success")
-                        Realm.getDefaultInstance().let {
-                            UserRepository(it).getUserAccounts().let {
-                                contentView?.updateAccountsList(it)
-                            }
-                        }
-                        contentView?.showConversionResult(true, "Conversion successful")
-                    },
-                    onError = { err ->
-                        when (err) {
-                            BalanceInsufficientException() -> {
-                                Log.e("Exchange", "Balance not sufficient exception")
-                                contentView?.showConversionResult(false, reason = "Balance insufficient")
-                            }
-                            else -> {
-                                Log.e("Exchange", "$err")
-                                contentView?.showConversionResult(false, reason = "${err}")
-                            }
+        conversionManager.performExchange(fromMoney, toCurrency)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onComplete = {
+                    Log.v("Exchange", "Conversion success")
+                    Realm.getDefaultInstance().let {
+                        UserRepository(it).getUserAccounts().let {
+                            contentView?.updateAccountsList(it)
                         }
                     }
-                )
-        )
+                    contentView?.showConversionResult(true, "Conversion successful")
+                },
+                onError = { err ->
+                    when (err) {
+                        BalanceInsufficientException() -> {
+                            Log.e("Exchange", "Balance not sufficient exception")
+                            contentView?.showConversionResult(false, reason = "Balance insufficient")
+                        }
+                        else -> {
+                            Log.e("Exchange", "$err")
+                            contentView?.showConversionResult(false, reason = "${err}")
+                        }
+                    }
+                }
+            )
+
     }
 }

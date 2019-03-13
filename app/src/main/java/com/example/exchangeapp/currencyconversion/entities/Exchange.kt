@@ -6,15 +6,15 @@ import io.realm.annotations.Required
 
 open class Exchange(
     @PrimaryKey
-        var transactionId: Int = 0,
+    var transactionId: Int = 0,
     @Required
-        var currencyFrom: String = "",
+    var currencyFrom: String = "",
     @Required
-        var amount: String = "",
+    var amount: String = "",
     @Required
-        var currencyTo: String = "",
+    var currencyTo: String = "",
     @Required
-        var amountTo: String = "",
+    var amountTo: String = "",
     @Required
-        var feeAmount: String = ""
+    var feeAmount: String = ""
 ) : RealmObject()

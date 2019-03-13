@@ -8,7 +8,6 @@ import io.realm.RealmList
 import org.joda.money.CurrencyUnit
 
 class UserRepository(realm: Realm) : EntityRepository<User>(realm) {
-
     override fun getPersistentType(): Class<User> = User::class.java
 
     fun setupUser() {
