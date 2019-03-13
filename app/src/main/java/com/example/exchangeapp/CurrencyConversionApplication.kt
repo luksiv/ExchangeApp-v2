@@ -3,7 +3,7 @@ package com.example.exchangeapp
 import android.app.Activity
 import android.app.Application
 import com.example.exchangeapp.common.dagger.AppComponent
-import com.paysera.currencyconverter.common.dagger.DaggerAppComponent
+import com.example.exchangeapp.common.dagger.DaggerAppComponent
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasActivityInjector
 import io.realm.Realm
