@@ -7,11 +7,10 @@ import android.view.ViewGroup
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.HorizontalChangeHandler
 import com.example.exchangeapp.CurrencyConversionApplication
-import com.example.exchangeapp.common.AppConstants
 import com.example.exchangeapp.common.controllers.BaseController
-import com.example.exchangeapp.currencyconversion.helpers.CurrencyConversionHelper
-import com.example.exchangeapp.currencyconversion.exceptions.BalanceInsufficientException
 import com.example.exchangeapp.common.repositories.UserRepository
+import com.example.exchangeapp.currencyconversion.exceptions.BalanceInsufficientException
+import com.example.exchangeapp.currencyconversion.helpers.CurrencyConversionHelper
 import com.example.exchangeapp.currencyconversion.views.HomeView
 import com.example.exchangeapp.currencyconversion.views.HomeViewDelegate
 import io.reactivex.Single

@@ -2,7 +2,6 @@ package com.paysera.currencyconverter.common.dagger
 
 import android.app.Application
 import com.example.exchangeapp.CurrencyConversionApplication
-import com.example.exchangeapp.common.controllers.BaseController
 import com.example.exchangeapp.currencyconversion.controllers.HistoryController
 import com.example.exchangeapp.currencyconversion.controllers.HomeController
 import dagger.BindsInstance

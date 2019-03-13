@@ -13,7 +13,6 @@ import com.example.exchangeapp.currencyconversion.adapters.AccountsAdapter
 import com.example.exchangeapp.currencyconversion.entities.Account
 import com.jakewharton.rxbinding.widget.RxTextView
 import com.jakewharton.rxbinding.widget.selectionEvents
-import io.reactivex.Emitter
 import io.reactivex.subjects.PublishSubject
 import io.realm.RealmList
 import kotlinx.android.synthetic.main.view_home.view.*
@@ -156,14 +155,12 @@ class HomeView(context: Context) : FrameLayout(context, null) {
             it.clear()
             it.addAll(fromList)
             fromCurrency.setSelection(fromList.indexOf(fromCurrencyUnit))
-            //it.notifyDataSetChanged()
         }
         toSpinnerAdapter?.let {
             val toList = getFilteredCurrencyList { it != fromCurrencyUnit }
             it.clear()
             it.addAll(toList)
             toCurrency.setSelection(toList.indexOf(toCurrencyUnit))
-            //it.notifyDataSetChanged()
         }
     }
 

@@ -5,9 +5,7 @@ import com.example.exchangeapp.currencyconversion.entities.Account
 import com.example.exchangeapp.currencyconversion.entities.User
 import io.realm.Realm
 import io.realm.RealmList
-import io.realm.RealmResults
 import org.joda.money.CurrencyUnit
-import javax.inject.Inject
 
 class UserRepository(realm: Realm) : EntityRepository<User>(realm) {
 

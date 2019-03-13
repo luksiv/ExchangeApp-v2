@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.exchangeapp.R
 import com.example.exchangeapp.currencyconversion.entities.Account
 import io.realm.RealmList
-import io.realm.RealmResults
 import kotlinx.android.synthetic.main.account_item.view.*
 
 class AccountsAdapter(var accounts: RealmList<Account>) : RecyclerView.Adapter<AccountsAdapter.ViewHolder>() {

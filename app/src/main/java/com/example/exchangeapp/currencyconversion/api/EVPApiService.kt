@@ -1,8 +1,5 @@
 package com.paysera.currencyconverter.currencyconversion.services
 
-import com.google.gson.annotations.SerializedName
-import com.paysera.currencyconverter.currencyconversion.api.CurrencyConversionApiClient
-import com.paysera.currencyconverter.currencyconversion.api.ICurrencyConversionApiClient
 import io.reactivex.Single
 import retrofit2.http.GET
 import retrofit2.http.Path

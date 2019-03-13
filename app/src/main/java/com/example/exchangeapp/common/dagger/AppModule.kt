@@ -2,9 +2,9 @@ package com.paysera.currencyconverter.common.dagger
 
 import android.app.Application
 import android.content.Context
+import com.example.exchangeapp.common.repositories.UserRepository
 import com.example.exchangeapp.common.services.BalanceManager
 import com.example.exchangeapp.currencyconversion.helpers.CurrencyConversionHelper
-import com.example.exchangeapp.common.repositories.UserRepository
 import com.paysera.currencyconverter.currencyconversion.SchedulerProvider
 import com.paysera.currencyconverter.currencyconversion.api.CurrencyConversionApiClient
 import com.paysera.currencyconverter.currencyconversion.services.EVPApiService
